@@ -1,8 +1,10 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
+import airgramReducer from '../features/airgram/airgramSlice';
 import counterReducer from '../features/counter/counterSlice';
 
 export const store = configureStore({
   reducer: {
+    airgram: airgramReducer,
     counter: counterReducer,
   },
 });
