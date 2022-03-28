@@ -13,6 +13,7 @@ export function Authenticate({ unauthenticatedState: state }: AuthenticateProps)
 
     const insertPhoneNumberComponent =
         <div>
+            <h2>Insert Phone Number:</h2>
             <input type="text" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
             <button onClick={() => dispatch(setAuthenticationPhoneNumber(phoneNumber))}>
                 Send
@@ -21,6 +22,7 @@ export function Authenticate({ unauthenticatedState: state }: AuthenticateProps)
     
     const insertCodeComponent =
         <div>
+            <h2>Insert Code:</h2>
             <input type="text" value={code} onChange={(e) => setCode(e.target.value)} />
             <button onClick={() => dispatch(setAuthenticationCode(code))}>
                 Send

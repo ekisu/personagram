@@ -1,4 +1,4 @@
-import { Airgram, AuthorizationStateUnion, isError, toObject, UserUnion } from "@airgram/web";
+import { Airgram, AuthorizationStateUnion, Chats, isError, toObject, UserUnion } from "@airgram/web";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { isString } from "typed-assert";
 import { assert } from '../../utils';
@@ -17,6 +17,7 @@ export type AirgramUnauthenticatedState = {
 export type AirgramAuthenticatedState = {
     type: 'authenticated';
     me: UserUnion;
+    chats: Chats;
 };
 
 export type AirgramState = AirgramLoadingState | AirgramUnauthenticatedState | AirgramAuthenticatedState;
@@ -29,22 +30,32 @@ const airgram = new Airgram({
     apiHash: process.env.REACT_APP_APP_HASH,
 });
 
-async function loadAuthenticatedState(): Promise<AirgramAuthenticatedState> {
+async function innerLoadAuthenticatedState(): Promise<AirgramAuthenticatedState> {
     const me = toObject(await airgram.api.getMe());
+    const chats = toObject(await airgram.api.getChats({
+        limit: 30,
+    }));
 
     return {
         type: 'authenticated',
         me,
-    };
+        chats,
+    }
 }
+
+const loadAuthenticatedState = createAsyncThunk('airgram/loadAuthenticatedState', async () => {
+    return await innerLoadAuthenticatedState();
+});
 
 export const loadInitialState = createAsyncThunk('airgram/loadInitialState', async (): Promise<AirgramState> => {
     const { response } = await airgram.api.getAuthorizationState();
     assert(!isError(response));
 
+    console.log(response);
+
     if (response._ === 'authorizationStateReady') {
         // We're authorized, so load the authenticated state
-        return await loadAuthenticatedState();
+        return await innerLoadAuthenticatedState();
     }
 
     const telegramAuthorizationStateToOursMapping: Partial<Record<AuthorizationStateUnion['_'], AirgramUnauthenticatedState['authorizationState']>> = {
@@ -85,9 +96,7 @@ export const airgramSlice = createSlice({
             };
 
             const newAuthorizationState = telegramAuthorizationStateToOursMapping[telegramAuthorizationState._];
-            if (newAuthorizationState === undefined) {
-                throw new Error('ye');
-            }
+            assert(newAuthorizationState !== undefined);
 
             return {
                 type: 'unauthenticated',
@@ -97,25 +106,32 @@ export const airgramSlice = createSlice({
     },
     extraReducers: builder => {
         builder
-            .addCase(loadInitialState.fulfilled, (state, action) => {
-                const newState = action.payload;
-
-                // FIXME this is kinda wacky, the assertions are mostly to satisfy TS
-                state.type = newState.type;
-                if (state.type === 'authenticated') {
-                    assert(state.type === newState.type);
-                    state.me = newState.me;
-                } else if (state.type === 'unauthenticated') {
-                    assert(state.type === newState.type);
-                    state.authorizationState = newState.authorizationState;
-                }
-            })
+            .addCase(loadInitialState.fulfilled, (state, action) => action.payload)
+            .addCase(loadAuthenticatedState.fulfilled, (state, action) => action.payload)
     },
 });
 
 export const configureAirgramEventListeners = (dispatch: AppDispatch, getState: () => RootState) => {
     airgram.on('updateAuthorizationState', async ({ update }) => {
         const authorizationState = update.authorizationState;
+        const filteredEventTypes: AuthorizationStateUnion['_'][] = [
+            'authorizationStateWaitTdlibParameters',
+            'authorizationStateWaitEncryptionKey',
+            'authorizationStateClosing',
+            'authorizationStateClosed',
+        ];
+
+        console.log(update);
+
+        if (filteredEventTypes.includes(authorizationState._)) {
+            return;
+        }
+
+        if (authorizationState._ === 'authorizationStateReady') {
+            dispatch(loadAuthenticatedState());
+
+            return;
+        }
 
         dispatch(airgramSlice.actions.updateAuthorizationState(authorizationState));
     })
