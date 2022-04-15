@@ -1,8 +1,10 @@
-import { Airgram, AuthorizationStateUnion, Chats, isError, toObject, UserUnion } from "@airgram/web";
+import { Airgram, AuthorizationStateUnion, isError, toObject, UserUnion } from "@airgram/web";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { isString } from "typed-assert";
 import { assert } from '../../utils';
 import { AppDispatch, RootState } from "../../app/store";
+import { Chats, loadChats } from "./chats";
+import { configureBuilder, loadMessagesInitialState, Messages } from "./messages";
 
 export type AirgramLoadingState = {
     type: 'loading';
@@ -18,6 +20,7 @@ export type AirgramAuthenticatedState = {
     type: 'authenticated';
     me: UserUnion;
     chats: Chats;
+    messages: Messages;
 };
 
 export type AirgramState = AirgramLoadingState | AirgramUnauthenticatedState | AirgramAuthenticatedState;
@@ -25,21 +28,20 @@ export type AirgramState = AirgramLoadingState | AirgramUnauthenticatedState | A
 isString(process.env.REACT_APP_APP_ID);
 isString(process.env.REACT_APP_APP_HASH);
 
-const airgram = new Airgram({
+export const airgram = new Airgram({
     apiId: parseInt(process.env.REACT_APP_APP_ID, 10),
     apiHash: process.env.REACT_APP_APP_HASH,
 });
 
 async function innerLoadAuthenticatedState(): Promise<AirgramAuthenticatedState> {
     const me = toObject(await airgram.api.getMe());
-    const chats = toObject(await airgram.api.getChats({
-        limit: 30,
-    }));
+    const chats = await loadChats(airgram);
 
     return {
         type: 'authenticated',
         me,
         chats,
+        messages: loadMessagesInitialState(),
     }
 }
 
@@ -108,6 +110,8 @@ export const airgramSlice = createSlice({
         builder
             .addCase(loadInitialState.fulfilled, (state, action) => action.payload)
             .addCase(loadAuthenticatedState.fulfilled, (state, action) => action.payload)
+        
+        configureBuilder(builder);
     },
 });
 

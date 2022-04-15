@@ -7,6 +7,8 @@ import { configureAirgramEventListeners, loadInitialState, selectAirgramState } 
 import { Authenticate } from './features/authenticate/Authenticate';
 import { store } from './app/store';
 import ChatsList from './features/chats_list/ChatsList';
+import { selectAuthenticatedViewState } from './features/authenticated_view/authenticatedViewSlice';
+import Chat from './features/chat/Chat';
 
 function App() {
   const dispatch = useAppDispatch();
@@ -16,6 +18,8 @@ function App() {
   }, [dispatch]);
 
   const airgramState = useAppSelector(selectAirgramState);
+  const authenticatedViewState = useAppSelector(selectAuthenticatedViewState);
+
   let topLevelComponent;
 
   if (airgramState.type === 'loading') {
@@ -23,7 +27,14 @@ function App() {
   } else if (airgramState.type === 'unauthenticated') {
     topLevelComponent = <Authenticate unauthenticatedState={airgramState} />;
   } else {
-    topLevelComponent = <ChatsList authenticatedState={airgramState} />;
+    switch (authenticatedViewState.type) {
+    case 'chats_list':
+      topLevelComponent = <ChatsList authenticatedState={airgramState} />;
+      break;
+    case 'chat':
+      topLevelComponent = <Chat authenticatedState={airgramState} chatId={authenticatedViewState.chatId} />;
+      break;
+    }
   }
 
   return (
