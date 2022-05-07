@@ -1,18 +1,38 @@
-import { Chat as AirgramChat, Message as AirgramMessage } from "@airgram/web";
+import { Chat as AirgramChat, Message as AirgramMessage, UserUnion } from "@airgram/web";
 import { useAppDispatch } from "../../app/hooks";
 import { AirgramAuthenticatedState } from "../airgram/airgramSlice";
-import { loadMoreMessagesForChatId } from "../airgram/messages";
+import { loadMoreMessagesForChatId, sendMessage } from "../airgram/messages";
 import ChatMessage from "./ChatMessage";
 import InfiniteScroll from "react-infinite-scroll-component";
 import styles from "./Chat.module.css";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { AppDispatch } from "../../app/store";
 
 export type ChatProps = {
     authenticatedState: AirgramAuthenticatedState,
     chatId: number,
 };
 
-function buildLoadedChatView(chat: AirgramChat, chatMessages: AirgramMessage[], loadMoreMessagesCallback: () => void) {
+function buildLoadedChatView(
+    chat: AirgramChat,
+    chatMessages: AirgramMessage[],
+    me: UserUnion,
+    loadMoreMessagesCallback: () => void,
+    dispatch: AppDispatch,
+    textAreaValue: string,
+    setTextAreaValue: React.Dispatch<React.SetStateAction<string>>,
+) {
+    const handleTextAreaKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key !== "Enter") {
+            return;
+        }
+
+        dispatch(sendMessage({
+            chatId: chat.id,
+            messageText: textAreaValue,
+        }));
+    }
+
     return (
         <div className={styles.chat}>
             <h1>Chatting with {chat.title}</h1>
@@ -30,8 +50,12 @@ function buildLoadedChatView(chat: AirgramChat, chatMessages: AirgramMessage[], 
                     hasMore={true}
                     loader={<h4>Loading...</h4>}
                     scrollableTarget="scrollable-chat-messages">
-                    {chatMessages.slice().reverse().map((message) => <ChatMessage message={message} key={message.id} />)}
+                    {chatMessages.slice().reverse().map((message) => <ChatMessage message={message} key={message.id} me={me}/>)}
                 </InfiniteScroll>
+            </div>
+
+            <div className={styles.chatInput}>
+                <input type="text" onKeyUp={handleTextAreaKeyPress} onChange={(e) => setTextAreaValue(e.target.value)}></input>
             </div>
         </div>
     );
@@ -39,8 +63,9 @@ function buildLoadedChatView(chat: AirgramChat, chatMessages: AirgramMessage[], 
 
 export default function Chat({ authenticatedState, chatId }: ChatProps) {
     const dispatch = useAppDispatch();
-    const { chats, messages } = authenticatedState
+    const { chats, messages, me } = authenticatedState
     const chat = chats.airgramChats.find((airgramChat) => airgramChat.id === chatId)
+    const [textAreaValue, setTextAreaValue] = useState('');
 
     const chatMessages = messages.airgramMessagesByChatId[chatId]
     const loadMoreMessagesCallback = () => {
@@ -61,7 +86,8 @@ export default function Chat({ authenticatedState, chatId }: ChatProps) {
     }, [chatMessages])
 
     const contents = chat && chatMessages
-        ? buildLoadedChatView(chat, chatMessages, loadMoreMessagesCallback)
+        // FIXME tem tipo 90 parametros isso
+        ? buildLoadedChatView(chat, chatMessages, me, loadMoreMessagesCallback, dispatch, textAreaValue, setTextAreaValue)
         : <p>Loading...</p>
 
     return contents

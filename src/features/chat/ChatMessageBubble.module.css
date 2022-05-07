@@ -1,0 +1,10 @@
+.chatMessageBubble .foreignContent {
+    transform: rotate(-4deg);
+}
+
+.chatMessageBubble .foreignContent .content {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}

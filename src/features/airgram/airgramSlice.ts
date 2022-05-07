@@ -4,7 +4,12 @@ import { isString } from "typed-assert";
 import { assert } from '../../utils';
 import { AppDispatch, RootState } from "../../app/store";
 import { Chats, loadChats } from "./chats";
-import { configureBuilder, loadMessagesInitialState, Messages } from "./messages";
+import {
+    configureBuilder,
+    configureAirgramEventListeners as configureMessagesAirgramEventListeners,
+    loadMessagesInitialState,
+    Messages
+} from "./messages";
 
 export type AirgramLoadingState = {
     type: 'loading';
@@ -104,6 +109,16 @@ export const airgramSlice = createSlice({
                 type: 'unauthenticated',
                 authorizationState: newAuthorizationState,
             }
+        },
+        updateMessages: (state, action: PayloadAction<Messages>) => {
+            if (state.type !== 'authenticated') {
+                return state;
+            }
+
+            return {
+                ...state,
+                messages: action.payload,
+            }
         }
     },
     extraReducers: builder => {
@@ -139,8 +154,11 @@ export const configureAirgramEventListeners = (dispatch: AppDispatch, getState: 
 
         dispatch(airgramSlice.actions.updateAuthorizationState(authorizationState));
     })
+
+    configureMessagesAirgramEventListeners(dispatch, getState)
 }
 
 export const selectAirgramState = (state: RootState) => state.airgram;
+export const { updateMessages } = airgramSlice.actions;
 
 export default airgramSlice.reducer;

@@ -1,4 +1,6 @@
 .App {
+  background: url(./assets/bg.png);
+  background-size: contain;
   text-align: center;
 }
 
