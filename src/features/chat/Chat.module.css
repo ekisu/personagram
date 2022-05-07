@@ -1,7 +1,23 @@
+@font-face {
+    font-family: 'KoreanKRSM';
+    src: url(../../assets/fonts/KoreanKRSM.woff) format('woff');
+}
+
 .chat {
+    position: relative;
     display: flex;
     flex-direction: column;
     height: 100vh;
+    min-width: 79.5vh;
+}
+
+.chat .snsImage {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 15vh;
+    z-index: 100;
+    transform: rotate(-10deg) translate(0, -2vh);
 }
 
 .chat .chatMessages {
@@ -10,4 +26,21 @@
     display: flex;
     flex-direction: column-reverse;
     overflow: auto;
+    padding-left: 1vh;
+    padding-right: 1vh;
+}
+
+.chat .chatInput {
+    padding-top: 1vh;
+    padding-bottom: 1vh;
+}
+
+.chat .chatInput textarea {
+    width: calc(100% - 8vh);
+    resize: none;
+    font-family: 'KoreanKRSM';
+    border: none;
+    background-color: #780000;
+    color: white;
+    padding: 4vh;
 }

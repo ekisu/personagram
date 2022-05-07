@@ -7,8 +7,9 @@
     display: grid;
 
     grid-template-areas: "avatar message";
-    grid-template-columns: 20vh 1fr;
+    grid-template-columns: 20vh min-content;
     align-items: flex-end;
+    justify-content: space-around;
 }
 
 .chatMessage .avatar {

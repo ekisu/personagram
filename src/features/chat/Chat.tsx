@@ -7,6 +7,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import styles from "./Chat.module.css";
 import { useEffect, useState } from "react";
 import { AppDispatch } from "../../app/store";
+import snsImage from '../../assets/sns.png'
 
 export type ChatProps = {
     authenticatedState: AirgramAuthenticatedState,
@@ -22,10 +23,13 @@ function buildLoadedChatView(
     textAreaValue: string,
     setTextAreaValue: React.Dispatch<React.SetStateAction<string>>,
 ) {
-    const handleTextAreaKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const handleTextAreaKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.key !== "Enter") {
             return;
         }
+
+        e.preventDefault()
+        e.currentTarget.value = ''
 
         dispatch(sendMessage({
             chatId: chat.id,
@@ -35,7 +39,7 @@ function buildLoadedChatView(
 
     return (
         <div className={styles.chat}>
-            <h1>Chatting with {chat.title}</h1>
+            <img className={styles.snsImage} src={snsImage}/>
 
             <div id="scrollable-chat-messages" className={styles.chatMessages} style={{
                 display: "flex",
@@ -55,7 +59,7 @@ function buildLoadedChatView(
             </div>
 
             <div className={styles.chatInput}>
-                <input type="text" onKeyUp={handleTextAreaKeyPress} onChange={(e) => setTextAreaValue(e.target.value)}></input>
+                <textarea rows={1} onKeyUp={handleTextAreaKeyPress} onChange={(e) => setTextAreaValue(e.target.value)}></textarea>
             </div>
         </div>
     );
