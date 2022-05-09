@@ -1,0 +1,26 @@
+@font-face {
+    font-family: 'KoreanKRSM';
+    src: url(../../assets/fonts/KoreanKRSM.woff) format('woff');
+}
+
+.chatsListElement .foreignContent {
+    display: grid;
+
+    font-family: 'KoreanKRSM';
+    color: white;
+    transform: rotate(-5deg);
+    text-align: left;
+}
+
+.chatsListElement .foreignContent .content {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.chatsListElement .foreignContent .content p {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: '...';
+}
