@@ -23,6 +23,21 @@ export default function ChatsListElement({ airgramChat }: ChatsListElementProps)
     const { title, lastMessage } = airgramChat
 
     const lastMessageElement = lastMessage ? buildLastMessageElement(lastMessage) : <p>No messages.</p>
+    const messageDate = lastMessage ? new Date(lastMessage.date * 1000) : null
+    const messageDay = messageDate ? messageDate.getDate() + 1 : '??'
+    const messageMonth = messageDate ? messageDate.getMonth() + 1 : '?'
+
+
+    const dayOfWeekText = [
+        'Su',
+        'Mo',
+        'Tu',
+        'We',
+        'Th',
+        'Fr',
+        'Sa',
+    ]
+    const messageDayOfWeek = messageDate ? dayOfWeekText[messageDate.getDay()] : '?'
 
     return (
         <div onClick={() => dispatch(showChat(airgramChat.id))}>
@@ -98,6 +113,30 @@ export default function ChatsListElement({ airgramChat }: ChatsListElementProps)
                     d="m303.73 749.961 29.11 1.712 6.75-39.739-35.05-3.534-3.746 18.22Z"
                     transform="translate(-83.591 -686.686)"
                 />
+
+                <foreignObject x="18%" y="25%" width="9%" height="30%" className={styles.dateMonthForeignContent}>
+                    <div className={styles.dateMonth}>
+                        <p>{messageMonth}</p>
+                    </div>
+                </foreignObject>
+
+                <foreignObject x="22%" y="25.3%" width="9%" height="30%" className={styles.dateSlashForeignContent}>
+                    <div className={styles.dateSlash}>
+                        <p>/</p>
+                    </div>
+                </foreignObject>
+
+                <foreignObject x="26%" y="22.5%" width="10%" height="30%" className={styles.dateDayForeignContent}>
+                    <div className={styles.dateDay}>
+                        <p>{messageDay}</p>
+                    </div>
+                </foreignObject>
+
+                <foreignObject x="34.8%" y="-2%" width="10%" height="30%" className={styles.dateDowForeignContent}>
+                    <div className={styles.dateDow}>
+                        <p>{messageDayOfWeek}</p>
+                    </div>
+                </foreignObject>
 
                 <foreignObject x="28%" y="42%" width="65%" height="50%" className={styles.foreignContent}>
                     <div className={styles.content}>

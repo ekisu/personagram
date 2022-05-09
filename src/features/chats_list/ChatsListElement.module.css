@@ -3,6 +3,50 @@
     src: url(../../assets/fonts/KoreanKRSM.woff) format('woff');
 }
 
+.chatsListElement .dateMonthForeignContent,
+.chatsListElement .dateSlashForeignContent,
+.chatsListElement .dateDayForeignContent {
+    display: flex;
+
+    font-family: 'KoreanKRSM';
+    color: black;
+    transform: rotate(-5deg);
+}
+
+.chatsListElement .dateDowForeignContent {
+    display: flex;
+
+    font-family: 'KoreanKRSM';
+    color: white;
+    transform: rotate(5deg);
+}
+
+.chatsListElement .dateMonth,
+.chatsListElement .dateSlash,
+.chatsListElement .dateDay,
+.chatsListElement .dateDow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.chatsListElement .dateMonth p,
+.chatsListElement .dateSlash p,
+.chatsListElement .dateDay p,
+.chatsListElement .dateDow p {
+    margin: 0;
+}
+
+.chatsListElement .dateSlash p {
+    font-size: 1.8vh;
+}
+
+.chatsListElement .dateDow p {
+    font-size: 2.1vh;
+}
+
 .chatsListElement .foreignContent {
     display: grid;
 
