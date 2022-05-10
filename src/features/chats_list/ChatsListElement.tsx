@@ -1,7 +1,10 @@
-import { Chat, Message } from '@airgram/web';
+import { Chat, Message, UserUnion } from '@airgram/web';
 import { useAppDispatch } from '../../app/hooks';
 import { showChat } from '../authenticated_view/authenticatedViewSlice';
+import avatarFutaba from '../../assets/futaba.png';
+import avatarMakoto from '../../assets/makoto.png';
 import styles from './ChatsListElement.module.css';
+import React from 'react';
 
 function buildLastMessageElement(message: Message) {
     const { content } = message
@@ -16,9 +19,23 @@ function buildLastMessageElement(message: Message) {
 
 export type ChatsListElementProps = {
     airgramChat: Chat
+    me: UserUnion
 }
 
-export default function ChatsListElement({ airgramChat }: ChatsListElementProps) {
+type AvatarProps = {
+    avatar: string
+    background: string
+}
+
+function isMyMessage(message: Message, me: UserUnion) {
+    if (message.senderId._ !== 'messageSenderUser') {
+        return false
+    }
+
+    return message.senderId.userId === me.id
+}
+
+export default function ChatsListElement({ airgramChat, me }: ChatsListElementProps) {
     const dispatch = useAppDispatch();
     const { title, lastMessage } = airgramChat
 
@@ -26,6 +43,11 @@ export default function ChatsListElement({ airgramChat }: ChatsListElementProps)
     const messageDate = lastMessage ? new Date(lastMessage.date * 1000) : null
     const messageDay = messageDate ? messageDate.getDate() + 1 : '??'
     const messageMonth = messageDate ? messageDate.getMonth() + 1 : '?'
+
+    const avatarProps: AvatarProps = lastMessage && isMyMessage(lastMessage, me)
+        ? { avatar: avatarFutaba, background: 'pink' }
+        : { avatar: avatarMakoto, background: 'purple' }
+
 
 
     const dayOfWeekText = [
@@ -74,19 +96,21 @@ export default function ChatsListElement({ airgramChat }: ChatsListElementProps)
                     d="m100.422 760.99 41.662 87.177 103.552-25.527-17.553-50.21-23.5 5.105-2.923-14.8Z"
                     transform="translate(-83.591 -686.686)"
                 />
-                <path
-                    style={{
-                    fill: "#676767",
-                    fillOpacity: 1,
-                    stroke: "none",
-                    strokeWidth: 1,
-                    strokeLinecap: "butt",
-                    strokeLinejoin: "miter",
-                    strokeOpacity: 1,
-                    }}
-                    d="m110.585 771.065 34.909 71.009 94.678-24.862-16.087-43.858-19.502 4.181-1.897-10.08Z"
-                    transform="translate(-83.591 -686.686)"
-                />
+                <clipPath id="avatarClipPath">
+                    <path
+                        style={{
+                        fill: "#676767",
+                        fillOpacity: 1,
+                        stroke: "none",
+                        strokeWidth: 1,
+                        strokeLinecap: "butt",
+                        strokeLinejoin: "miter",
+                        strokeOpacity: 1,
+                        }}
+                        d="m110.585 771.065 34.909 71.009 94.678-24.862-16.087-43.858-19.502 4.181-1.897-10.08Z"
+                        transform="translate(-83.591 -686.686)"
+                    />
+                </clipPath>
                 <path
                     style={{
                     fill: "#fff",
@@ -137,6 +161,16 @@ export default function ChatsListElement({ airgramChat }: ChatsListElementProps)
                         <p>{messageDayOfWeek}</p>
                     </div>
                 </foreignObject>
+
+                <g clipPath="url(#avatarClipPath)">
+                    <foreignObject x="-2.5%" y="40%" width="30%" height="70%" className={styles.avatarForeignContent}>
+                        <div className={styles.avatar} style={{
+                            "--hovered-color": avatarProps.background,
+                        } as React.CSSProperties}>
+                            <img src={avatarProps.avatar} alt="avatar" />
+                        </div>
+                    </foreignObject>
+                </g>
 
                 <foreignObject x="28%" y="42%" width="65%" height="50%" className={styles.foreignContent}>
                     <div className={styles.content}>

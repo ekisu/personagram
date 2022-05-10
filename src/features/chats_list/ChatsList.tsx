@@ -10,7 +10,7 @@ type ChatsListProps = {
 export default function ChatsList({ authenticatedState: state }: ChatsListProps) {
     const dispatch = useAppDispatch();
     const chats = state.chats.airgramChats.map((airgramChat) => (
-        <ChatsListElement airgramChat={airgramChat} key={airgramChat.id} />
+        <ChatsListElement airgramChat={airgramChat} me={state.me} key={airgramChat.id} />
     ));
 
     return (

@@ -3,6 +3,10 @@
     src: url(../../assets/fonts/KoreanKRSM.woff) format('woff');
 }
 
+.chatsListElement {
+    cursor: pointer;
+}
+
 .chatsListElement .dateMonthForeignContent,
 .chatsListElement .dateSlashForeignContent,
 .chatsListElement .dateDayForeignContent {
@@ -21,10 +25,17 @@
     transform: rotate(5deg);
 }
 
+.chatsListElement .avatarForeignContent {
+    display: flex;
+
+    transform: rotate(-10deg);
+}
+
 .chatsListElement .dateMonth,
 .chatsListElement .dateSlash,
 .chatsListElement .dateDay,
-.chatsListElement .dateDow {
+.chatsListElement .dateDow,
+.chatsListElement .avatar {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -45,6 +56,20 @@
 
 .chatsListElement .dateDow p {
     font-size: 2.1vh;
+}
+
+.chatsListElement .avatar {
+    background: #676767;
+}
+
+.chatsListElement:hover .avatar {
+    background: var(--hovered-color);
+}
+
+.chatsListElement .avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
 
 .chatsListElement .foreignContent {
