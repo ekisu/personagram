@@ -2,6 +2,7 @@ import { useAppDispatch } from "../../app/hooks";
 import { AirgramAuthenticatedState } from "../airgram/airgramSlice";
 import ChatsListElement from "./ChatsListElement";
 import styles from './ChatsList.module.css';
+import snsImage from '../../assets/sns.png'
 
 type ChatsListProps = {
     authenticatedState: AirgramAuthenticatedState,
@@ -15,7 +16,11 @@ export default function ChatsList({ authenticatedState: state }: ChatsListProps)
 
     return (
         <div className={styles.chatsList}>
-            {chats}
+            <img className={styles.snsImage} src={snsImage}/>
+
+            <div className={styles.chats}>
+                {chats}
+            </div>
         </div>
     )
 }

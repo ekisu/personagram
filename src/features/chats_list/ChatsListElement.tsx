@@ -48,8 +48,6 @@ export default function ChatsListElement({ airgramChat, me }: ChatsListElementPr
         ? { avatar: avatarFutaba, background: 'pink' }
         : { avatar: avatarMakoto, background: 'purple' }
 
-
-
     const dayOfWeekText = [
         'Su',
         'Mo',
