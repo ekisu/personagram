@@ -57,7 +57,7 @@ export default function ChatMessage({ message, me }: ChatMessageProps) {
                     </div>
                 </div>
 
-                <img className={styles.avatarImage} src={avatarProps.avatar}></img>
+                <img className={styles.avatarImage} src={avatarProps.avatar} alt=''></img>
             </div>
 
             {/*<div className={styles.message}>
