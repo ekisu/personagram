@@ -1,7 +1,7 @@
-import { Airgram, Message as AirgramMessage, toObject } from "@airgram/web";
+import { Message as AirgramMessage, toObject } from "@airgram/web";
 import { ActionReducerMapBuilder, createAsyncThunk } from "@reduxjs/toolkit";
 import { AppDispatch, RootState } from "../../app/store";
-import airgramSlice, { airgram, AirgramState, updateMessages } from "./airgramSlice";
+import { airgram, AirgramState, updateMessages } from "./airgramSlice";
 
 export type Messages = {
     airgramMessagesByChatId: Record<number, Array<AirgramMessage>>,

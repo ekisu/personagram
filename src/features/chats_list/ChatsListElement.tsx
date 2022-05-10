@@ -37,7 +37,7 @@ function isMyMessage(message: Message, me: UserUnion) {
 
 export default function ChatsListElement({ airgramChat, me }: ChatsListElementProps) {
     const dispatch = useAppDispatch();
-    const { title, lastMessage } = airgramChat
+    const { lastMessage } = airgramChat
 
     const lastMessageElement = lastMessage ? buildLastMessageElement(lastMessage) : <p>No messages.</p>
     const messageDate = lastMessage ? new Date(lastMessage.date * 1000) : null

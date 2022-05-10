@@ -5,7 +5,7 @@ import { loadMoreMessagesForChatId, sendMessage } from "../airgram/messages";
 import ChatMessage from "./ChatMessage";
 import InfiniteScroll from "react-infinite-scroll-component";
 import styles from "./Chat.module.css";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { AppDispatch } from "../../app/store";
 import snsImage from '../../assets/sns.png'
 
@@ -39,7 +39,7 @@ function buildLoadedChatView(
 
     return (
         <div className={styles.chat}>
-            <img className={styles.snsImage} src={snsImage}/>
+            <img className={styles.snsImage} src={snsImage} alt='' />
 
             <div id="scrollable-chat-messages" className={styles.chatMessages} style={{
                 display: "flex",
@@ -72,12 +72,12 @@ export default function Chat({ authenticatedState, chatId }: ChatProps) {
     const [textAreaValue, setTextAreaValue] = useState('');
 
     const chatMessages = messages.airgramMessagesByChatId[chatId]
-    const loadMoreMessagesCallback = () => {
+    const loadMoreMessagesCallback = useCallback(() => {
         dispatch(loadMoreMessagesForChatId({
             chatId,
             messages,
         }))
-    }
+    }, [dispatch, chatId, messages])
 
     useEffect(() => {
         // FIXME isso aqui é tipo horrivel, mas precisa pq o InfiniteScroll so funciona se tiver
@@ -87,7 +87,7 @@ export default function Chat({ authenticatedState, chatId }: ChatProps) {
         if (!chatMessages || chatMessages.length < 20) {
             loadMoreMessagesCallback()
         }
-    }, [chatMessages])
+    }, [chatMessages, loadMoreMessagesCallback])
 
     const contents = chat && chatMessages
         // FIXME tem tipo 90 parametros isso
